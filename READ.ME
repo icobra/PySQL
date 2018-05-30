@@ -1,0 +1,194 @@
+mysql.connector tutorial for me
+
+
+i have some trouble
+
+after creat db, i use some python file
+
+
+################################################################################
+
+root@minit34:/home/PySQL# cat base.py
+# coding: utf8
+# version 0.001
+# SQL connector + Simple SQL base
+
+import mysql.connector
+conn = mysql.connector.connect(database="db", host="localhost",user="name",
+    password="youpassword")
+
+################################################################################
+
+
+/********************************************************************
+
+root@minit34:/home/PySQL# python3 base.py
+Traceback (most recent call last):
+  File "base.py", line 7, in <module>
+    password="youpassword")
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/__init__.py", line 179, in connect
+    return MySQLConnection(*args, **kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 94, in __init__
+    self.connect(**kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/abstracts.py", line 722, in connect
+    self._open_connection()
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 211, in _open_connection
+    self._ssl)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 143, in _do_auth
+    self._auth_switch_request(username, password)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 176, in _auth_switch_request
+    raise errors.get_exception(packet)
+mysql.connector.errors.ProgrammingError: 1045 (28000): Access denied for user 'name'@'localhost' (using password: YES)
+root@minit34:/home/PySQL# root python3 base.py
+-bash: root: команда не найдена
+root@minit34:/home/PySQL# sudo python3 base.py
+Traceback (most recent call last):
+  File "base.py", line 7, in <module>
+    password="youpassword")
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/__init__.py", line 179, in connect
+    return MySQLConnection(*args, **kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 94, in __init__
+    self.connect(**kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/abstracts.py", line 722, in connect
+    self._open_connection()
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 211, in _open_connection
+    self._ssl)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 143, in _do_auth
+    self._auth_switch_request(username, password)
+  File "/usr/local/lib/python3.5/dist-packages/mysql/connector/connection.py", line 176, in _auth_switch_request
+    raise errors.get_exception(packet)
+mysql.connector.errors.ProgrammingError: 1045 (28000): Access denied for user 'name'@'localhost' (using password: YES)
+
+***********************************************************************************************************/
+
+I fix it
+
+1) Enter on SQL
+$ mysql -u root -p
+
+
+2) Create BD
+mysql> CREATE DATABASE имя_базы;
+
+
+3) Create user
+mysql> GRANT ALL PRIVILEGES ON имя_базы.* TO имя_пользователя@localhost IDENTIFIED BY 'пароль_пользователя';
+
+
+
+After make create.py
+
+
+/*****************************************************************************
+
+root@minit34:/home/PySQL# mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 264
+Server version: 5.7.20-0ubuntu0.16.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| blog               |
+| db                 |
+| mysql              |
+| performance_schema |
+| sys                |
+| world              |
++--------------------+
+7 rows in set (0,00 sec)
+
+mysql> USE db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> SHOW TABLES;
++--------------+
+| Tables_in_db |
++--------------+
+| Users        |
++--------------+
+1 row in set (0,00 sec)
+
+mysql> SHOW COLUMNS FROM Users;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| id       | int(11)     | YES  |     | NULL    |       |
+| name     | varchar(16) | YES  |     | NULL    |       |
+| password | varchar(16) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0,00 sec)
+
+mysql> 
+
+**************************************************************************************/
+
+
+After write some data
+
+
+/************************************************************************************
+
+Database changed
+mysql> SELECT * FROM Users;
++------+------+----------+
+| id   | name | password |
++------+------+----------+
+|    1 | root | root     |
+|    2 | user | password |
+|  301 | lol  | w00t     |
++------+------+----------+
+3 rows in set (0,00 sec)
+
+mysql> 
+
+**************************************************************************************/
+
+
+When i try to read .... in console all OK. But in file i do't see result
+
+
+/***************************************************************************************
+root@minit34:/home/PySQL# python3
+Python 3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import mysql.connector
+>>> conn = mysql.connector.connect(database="db", host="localhost",user="user",
+...     password="youpassword")
+>>> 
+>>> #write some data
+... cursor = conn.cursor()
+>>> cursor.execute("SELECT * FROM Users");
+>>> rows = cursor.fetchall()
+>>> rows
+[(1, 'root', 'root'), (2, 'user', 'password'), (301, 'lol', 'w00t')]
+>>> 
+>>> 
+
+***********************************************************************************************/
+
+I need to use operator 'print'
+
+/**********************************************************************************************
+
+
+#read some data
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM Users");
+rows = cursor.fetchall()
+print (rows)
+
+***********************************************************************************************/
