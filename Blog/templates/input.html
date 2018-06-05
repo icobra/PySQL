@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+
+{% block header %}
+   <h1>{{ header_text }}</h1>
+{% end %}
+
+{% block body %}
+   <div id="hello">
+      <p> Добро пожаловать в Tornados!<p>
+      <p> ... </p>
+   <div>
+   	 <form action="/wblog" method="POST">
+      PostDate: <input name="PostDate" type="text"><br>
+      Name: <input name="name" type="text"><br>
+      Information: <input name="Information" type="text"><br>
+      <input type="submit" value="Отправить">
+    </form>
+{% end %}

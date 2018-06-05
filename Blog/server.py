@@ -23,7 +23,8 @@ class Application(tornado.web.Application):
             (r"/about", AboutHandler),
             (r"/faq", FaqHandler),
             (r"/test", TestHandler),
-            (r"/blog", BlogHandler)
+            (r"/blog", BlogHandler),
+            (r"/wblog", WriteBlogHandler)
         ]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
@@ -60,19 +61,43 @@ class TestHandler(tornado.web.RequestHandler):
             header_text = "Проверка функционала",
         )      
 # read some date from SQL
-cursor = conn.cursor()
-cursor.execute("SELECT * FROM Posts");
-from_blog = cursor.fetchall()
-
 
 class BlogHandler(tornado.web.RequestHandler):
     def get(self):
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Posts");
+        from_blog = cursor.fetchall()
         self.render(
             "blog.html",
             page_title = "Наш блог",
             header_text = "Заметки и не только",
             blog_text = from_blog
         )
+
+class WriteBlogHandler(tornado.web.RequestHandler):
+    async def get(self):
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Posts");
+        from_blog = cursor.fetchall()
+        self.render(
+            "input.html",
+            page_title = "Наш блог",
+            header_text = "Заметки и не только",
+            blog_text = from_blog
+        )
+
+    async def post(self):
+        PostDate = self.get_argument("PostDate")
+        Name = self.get_argument("name")
+        Information = self.get_argument("Information")
+        cursor = conn.cursor()
+        query = "INSERT INTO Posts(postdate,name,information) VALUES(%s,%s,%s)"
+        cursor.execute(query,[PostDate,Name,Information])
+        conn.commit()
+        # отправляем на чтение
+        self.redirect("/blog")
+
+
 
 def main():
     tornado.options.parse_command_line()
