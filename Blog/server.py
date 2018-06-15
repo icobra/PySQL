@@ -24,7 +24,8 @@ class Application(tornado.web.Application):
             (r"/faq", FaqHandler),
             (r"/test", TestHandler),
             (r"/blog", BlogHandler),
-            (r"/wblog", WriteBlogHandler)
+            (r"/wblog", WriteBlogHandler),
+            (r"/login", LoginHandler)
         ]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
@@ -37,7 +38,7 @@ class HomeHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(
             "index.html",
-            page_title = "Tornados главная",
+            page_title = "Indian Bear главная",
             header_text = "Мы рады вам",
         )
 
@@ -94,9 +95,20 @@ class WriteBlogHandler(tornado.web.RequestHandler):
         query = "INSERT INTO Posts(postdate,name,information) VALUES(%s,%s,%s)"
         cursor.execute(query,[PostDate,Name,Information])
         conn.commit()
-        # отправляем на чтение
+        # Redirect to reading blog
         self.redirect("/blog")
 
+class LoginHandler(tornado.web.RequestHandler):
+    async def get(self):
+        self.render(
+            "login.html",
+            page_title = "Наш блог",
+            header_text = "Заметки и не только",
+        )
+
+    async def post(self):
+        LoginName = self.get_argument("Login")
+        PasswordBlog = self.get_argument("Password")
 
 
 def main():
